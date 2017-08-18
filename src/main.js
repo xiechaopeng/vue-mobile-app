@@ -4,6 +4,19 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 
+import MuseUI from 'muse-ui'
+
+import 'muse-ui/dist/muse-ui.css'
+import 'muse-ui/dist/theme-carbon.css'
+
+Vue.use(MuseUI)
+
+import scrollContiner from './layout/scrollContiner'
+import longShadowBtn from './components/longShadowBtn'
+
+Vue.component('scrollContiner',scrollContiner)
+Vue.component('longShadowBtn',longShadowBtn)
+
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
