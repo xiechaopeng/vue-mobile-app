@@ -17,6 +17,15 @@ import longShadowBtn from './components/longShadowBtn'
 Vue.component('scrollContiner',scrollContiner)
 Vue.component('longShadowBtn',longShadowBtn)
 
+//导入axios所有接口
+Vue.prototype.api = require('./api').default
+
+//开发环境下导入mock假数据处理模块
+if (process.env.NODE_ENV=='development') {
+  require('./mock')
+}
+
+
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

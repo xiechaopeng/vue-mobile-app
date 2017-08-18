@@ -23,7 +23,7 @@ export default {
   computed:{
     style(){
       let textShadow = []
-      for (var i = 0; i < this.size/2; i++) {
+      for (var i = 0; i < Number(this.size)/2; i++) {
         textShadow.push(`${i}px ${i}px ${this.shadowColor}`)
       }
       return {

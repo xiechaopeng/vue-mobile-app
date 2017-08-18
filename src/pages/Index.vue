@@ -55,7 +55,14 @@ export default {
       }else {
         this.searchBoxBg = 95/100
       }
+    },
+    async getIndexCatgory(id){
+      let res = await this.api.getIndexCatgory(id)
+      console.log(res)
     }
+  },
+  mounted(){
+    this.getIndexCatgory(0)
   }
 }
 </script>
