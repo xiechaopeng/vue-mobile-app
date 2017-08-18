@@ -1,6 +1,6 @@
 <template lang="html">
   <div>
-    <h1>购物车</h1>
+    <h1>购物车{{$route.path}}</h1>
   </div>
 </template>
 

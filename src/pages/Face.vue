@@ -1,6 +1,6 @@
 <template lang="html">
   <div>
-    <h1>用户中心</h1>
+    <h1>用户中心{{$route.path}}</h1>
   </div>
 </template>
 
