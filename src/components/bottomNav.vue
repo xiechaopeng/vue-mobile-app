@@ -7,7 +7,21 @@
       :value="index"
       :title="item.span"
       :icon="item.icon"
-      :key="index" />
+      :key="index"
+      v-if="index != 2"/>
+      <mu-bottom-nav-item
+      class="bottom-item"
+      :style="{color:item.path==activePath?activeColor:''}"
+      :value="index"
+      :title="item.span"
+      :key="index"
+      :icon="item.icon"
+      v-else>
+        <div style="position:absolute;right:10%;top:1%" v-if="shoppingCartList.length>0">
+          <mu-badge :content="''+shoppingCartList.length" badgeClass="badgeClass" circle secondary>
+          </mu-badge>
+        </div>
+      </mu-bottom-nav-item>
     </mu-bottom-nav>
   </mu-paper>
 </template>
@@ -52,18 +66,22 @@ export default {
         return this.$route.matched[0].path
       }
       return '/'
+    },
+    shoppingCartList(){
+      return this.$store.state.shoppingCartList
     }
   },
   methods: {
     bottomNavChange(index) {
       this.bottomNavIndex = index
       this.$router.push(this.bottomNav[index].path)
-    }
+    },
+
   }
 }
 </script>
 
-<style lang="css" scoped>
+<style lang="css">
 .bottom-nav {
     position: fixed;
     left: 0;
@@ -73,5 +91,9 @@ export default {
 }
 .bottom-item {
   transition: .2s;
+}
+.badgeClass{
+  width: 20px;
+  height: 20px;
 }
 </style>

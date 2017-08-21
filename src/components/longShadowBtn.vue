@@ -18,6 +18,10 @@ export default {
     shadowColor:{
       type:String,
       default:'#0880d7'
+    },
+    preset:{
+      type:Number,
+      default:-1
     }
   },
   computed:{
@@ -33,6 +37,9 @@ export default {
         textShadow:textShadow.join(','),
         backgroundColor:this.bgColor
       }
+    },
+    presetColor(){
+      return ''
     }
   }
 }

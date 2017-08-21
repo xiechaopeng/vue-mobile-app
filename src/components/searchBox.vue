@@ -63,7 +63,7 @@ export default {
 .g-search {
     display: flex;
     align-items: center;
-    transition: all 1s;
+    // transition: all .4s;
     .search-box {
         width: calc(100% - 88px - 48px);
         input {

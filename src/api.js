@@ -18,11 +18,24 @@ api.interceptors.response.use(response => {
 })
 
 export default {
-  //获取首页商品所有分类
-  getIndexCatgory(parentId) {
+  //获取首页推荐商品
+  getIndexActivity(){
+    return api.get('/index/recommend')
+  },
+  //获取所有分类
+  getCatgory(parentId) {
     return api.post('/catgory/getNode', {parentId:parentId})
   },
-  getIndexActive(){
-    return api.get('/catgory/getNode')
+  //获取商品简介
+  getGoodsById(id){
+    return api.post('/wx/product/getProductById',{id:id})
+  },
+  //获取商品详情
+  getGoodsDetailById(id){
+    return api.post('/wx/product/getProductDescriptionByProductId',{productId:id})
+  },
+  //获取商品评论内容
+  getGoodsReview(id){
+    return api.post('/wx/product/getProductReviewsByProductId',{productId:id})
   }
 }

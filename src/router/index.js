@@ -28,6 +28,11 @@ export default new Router({
       path: '/face',
       name: 'face',
       component: resolve => require(['@/pages/Face'], resolve)
+    },
+    {
+      path: '/detail/:id',
+      name: 'detail',
+      component: resolve => require(['@/pages/Detail'], resolve),
     }
   ]
 })

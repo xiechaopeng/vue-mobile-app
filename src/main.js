@@ -3,6 +3,8 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import { createStore } from './store'
+const store = createStore()
 
 import MuseUI from 'muse-ui'
 
@@ -11,11 +13,14 @@ import 'muse-ui/dist/theme-carbon.css'
 
 Vue.use(MuseUI)
 
+//通用组件
 import scrollContiner from './layout/scrollContiner'
 import longShadowBtn from './components/longShadowBtn'
+import goodsCard from './components/goodsCard'
 
 Vue.component('scrollContiner',scrollContiner)
 Vue.component('longShadowBtn',longShadowBtn)
+Vue.component('goodsCard',goodsCard)
 
 //导入axios所有接口
 Vue.prototype.api = require('./api').default
@@ -31,6 +36,7 @@ Vue.config.productionTip = false
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
+  store,
   router,
   template: '<App/>',
   components: { App }

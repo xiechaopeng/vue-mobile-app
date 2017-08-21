@@ -4,15 +4,18 @@
     <router-view></router-view>
   </transition>
   <bottom-nav fixed></bottom-nav>
+  <shopping-cart-sheet></shopping-cart-sheet>
 </div>
 </template>
 
 <script>
 import bottomNav from '@/components/bottomNav'
+import shoppingCartSheet from '@/components/shoppingCartSheet'
 export default {
   name: 'app',
   components:{
-    bottomNav
+    bottomNav,
+    shoppingCartSheet
   }
 }
 </script>
