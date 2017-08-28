@@ -2,7 +2,7 @@
   <div class="header" :class="{fixed:fixed}"
   :style="{color:textColor,background:bgColor?bgColor:'rgba(255,255,255,'+headerBg+')',boxShadow:headerBg>=0.95?'2px 2px 2px rgba(0,0,0,.2)':''}">
     <mu-icon-button @click.native="$router.go(-1)"  icon="keyboard_arrow_left"/>
-    <slot name="title"><span v-if="title && headerBg>=0.95">{{title}}</span></slot>
+    <slot name="title"><span style="font-size:1rem" v-if="title && headerBg>=0.95">{{title}}</span></slot>
     <mu-icon-button icon="more_horiz"/>
   </div>
 </template>

@@ -1,8 +1,12 @@
 <template>
 <div class="hello">
-  <search-box :bgOpacity="searchBoxBg" fixed></search-box>
+  <search-box inputColor="#41464b" inputBg="#fff" :bgOpacity="searchBoxBg" fixed></search-box>
   <scroll-continer marginBottom="56px" @scrollTopChange="scrollTopChange">
-    <img src="../assets/index.png" style="width:100%">
+    <!-- <carousel :auto="3000">
+
+    </carousel> -->
+    <img v-if="imgList.length>0" style="height:200px;width:100%" :src="imgList[0].imgUrl">
+
     <div class="quick-nav">
       <div v-for="item,index in quickNav">
         <long-shadow-btn>
@@ -11,7 +15,7 @@
         <div style="padding:5px 0;">{{item.span}}</div>
       </div>
     </div>
-    <div class="activity" v-for="item,index in activity">
+    <div class="activity" v-for="item,index in activity" v-if="item.type>1">
       <div class="header">
         <div class="line">
         </div>
@@ -24,16 +28,22 @@
         </div>
       </div>
       <div class="content">
-        <div class="list" v-if="item.type==0">
+        <div class="list" v-if="item.type==3">
           <goods-card :key="listIndex" v-for="list,listIndex in item.list"
           width="47%"
           height="110px"
           @clickImg="toDetail"
-          :data="list">
+          :data="list"
+          :imgUrl="list.images"
+          :title="list.title.split('&')[0]">
           </goods-card>
         </div>
-        <goods-card v-if="item.type==1" height="250px" :data="item" hidTitle :subTitle="item.desc">
-
+        <goods-card :key="listIndex" v-if="item.type==2 && listIndex <1" height="250px" v-for="list,listIndex in item.list"
+        :data="list"
+        :imgUrl="list.pic"
+        hidTitle
+        :subTitle="list.context">
+          {{list}}
         </goods-card>
       </div>
     </div>
@@ -43,13 +53,16 @@
 
 <script>
 import searchBox from '@/components/searchBox'
+import Carousel from 'vue-m-carousel'
 export default {
   components: {
-    searchBox
+    searchBox,
+    Carousel
   },
   data() {
     return {
       searchBoxBg: 0,
+      imgList:[],
       quickNav: [{
         span: '最常购买',
         icon: 'history',
@@ -89,10 +102,21 @@ export default {
     },
     toDetail(data){
       this.$router.push('/detail/'+data.id)
+    },
+    async getIndexData(){
+      let res = await this.api.getIndexData()
+      res.data[0].list.forEach((item)=>{
+        this.imgList.push({
+          imgUrl:item.pic
+        })
+      })
+      console.log(this.imgList);
+      this.activity = res.data
     }
   },
   mounted() {
-    this.getIndexActivity()
+    // this.getIndexActivity()
+    this.getIndexData()
   }
 }
 </script>

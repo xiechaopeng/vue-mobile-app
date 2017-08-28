@@ -23,21 +23,20 @@ export default {
   popShoppingCartList:(state,index)=>{
     state.shoppingCartList.splice(index,1)
   },
-  shoppingCartListCheck:(state,{index,flag})=>{
-    let temp = state.shoppingCartList[index]
-    temp.check = flag
-    state.shoppingCartList.splice(index,1,temp)
-  },
-  shoppingCartListAllCheck:(state,flag)=>{
-    state.shoppingCartList.forEach((item,index)=>{
-      let temp = item
-      item.check = flag
-      state.shoppingCartList.splice(index,1,temp)
-    })
-  },
   shoppingCartListChangeCount:(state,{index,count})=>{
     let temp = state.shoppingCartList[index]
     temp.count = count
     state.shoppingCartList.splice(index,1,temp)
+  },
+  setAddress:(state,payload)=>{
+    state.address = []
+    payload.forEach((item)=>{
+      state.address.push({
+        detail:item.address,
+        user:item.recname,
+        phone:item.recphone,
+        default:item.acquiescence==1
+      })
+    })
   }
 }

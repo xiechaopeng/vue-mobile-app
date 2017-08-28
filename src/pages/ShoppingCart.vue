@@ -29,7 +29,7 @@
               </div>
               <div class="item control-item">
                 <div @click="$store.commit('popShoppingCartList',index)" class="del">删除</div>
-                <mu-checkbox @change="checkChange(item,index)" v-model="item.check"/>
+                <mu-checkbox :nativeValue="''+item.id" @change="checkChange" v-model="checkList"/>
               </div>
             </div>
           </div>
@@ -46,7 +46,7 @@
     </scroll-continer>
     <mu-divider/>
     <div class="shoppingCart-bottom">
-      <mu-checkbox @change="allCheckChange" v-model="allCheck" :label="allCheck?'已全选':'未选完'"/>
+      <mu-checkbox @change="allCheckChange(checkList.length)" :value="checkList.length==shoppingCartList.length" :label="'已选'+checkList.length+'个'"/>
       <div class="price">
         <span>
           总计：¥
@@ -57,7 +57,6 @@
         去结算
       </button>
     </div>
-
   </div>
 </template>
 
@@ -72,25 +71,24 @@ export default {
       visible:false,
       allCheck:true,
       topPopup:false,
-      popupText:'popupText'
+      popupText:'popupText',
+      checkList:[]
     }
   },
   methods:{
-    checkChange(item,index){
-      this.$store.commit('shoppingCartListCheck',{
-        index:index,
-        flag:item.check
-      })
-      let allCheckCount = 0
-      this.shoppingCartList.forEach((item)=>{
-        if (item.check) {
-          allCheckCount++
-        }
-      })
-      this.allCheck = allCheckCount===this.shoppingCartList.length
+    checkChange(val){
+      this.allCheck = this.shoppingCartList.length == val.length
     },
-    allCheckChange(flag){
-      this.$store.commit('shoppingCartListAllCheck',flag)
+    allCheckChange(checkListlength){
+      console.log(checkListlength);
+      if (this.shoppingCartList.length==checkListlength) {
+        this.checkList = []
+      }else {
+        this.checkList = []
+        this.shoppingCartList.forEach((item)=>{
+          this.checkList.push(''+item.id)
+        })
+      }
     },
     changeCount(type,item,index){
       let newCount = item.count
@@ -120,11 +118,11 @@ export default {
       let shoppingCartList = this.$store.state.shoppingCartList
       let totalPrice = 0
       shoppingCartList.forEach((item)=>{
-        if (item.check) {
-          totalPrice+= item.count*item.price
-        }else {
-          this.allCheck = false
-        }
+        this.checkList.forEach((id)=>{
+          if (id==item.id) {
+            totalPrice+= item.count*item.price
+          }
+        })
       })
       return totalPrice
     }
@@ -169,6 +167,7 @@ export default {
           text-overflow: ellipsis;
           white-space: nowrap;
           overflow: hidden;
+          flex: 1
         }
         .item{
           width: 60%;
@@ -182,8 +181,9 @@ export default {
         .control{
           display: flex;
           align-items: center;
+          margin-right: .5rem;
           input{
-            width: 80px;
+            width: 40px;
             text-align: center;
             border: 1px solid #41464b;
             margin: 0 5px;

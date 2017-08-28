@@ -69,40 +69,44 @@ Mock.mock('http://119.23.174.214/index/recommend',{
     }]
   }
 })
-Mock.mock('http://119.23.174.214/wx/product/getProductByProductId',{
-  status:200,
-  data:{
-    title:'重庆荣昌营养猪肉',
-    unit:'500g',
-    price:12,
-    sales:34975,
-    desc:'荣获全国营养猪肉奖的明星猪肉品牌 找回回锅肉的味道',
-    imgUrl:'http://www.z4a.net/images/2017/08/19/zhurou.jpg'
-  }
-})
-Mock.mock('http://119.23.174.214/wx/product/getProductReviewsByProductId',{
-  status:200,
-  data:[{
-    createTime:'2017-8-19 20:10',
-    user:{
-      name:'梨涡浅笑',
-      coverUrl:'http://www.z4a.net/images/2017/08/19/mulai.jpg'
-    },
-    rate:5,
-    content:'荣获全国营养猪肉奖的明星猪肉品牌 找回回锅肉的味道,荣获全国营养猪肉奖的明星猪肉品牌 找回回锅肉的味道'
-  },{
-    createTime:'2017-8-19 19:32',
-    user:{
-      name:'似把君邀',
-      coverUrl:'http://www.z4a.net/images/2017/08/19/mulai.jpg'
-    },
-    rate:4,
-    content:'荣获全国营养猪肉奖的明星猪肉品牌 找回回锅肉的味道,荣获全国营养猪肉奖的明星猪肉品牌 找回回锅肉的味道'
-  }]
-})
-Mock.mock('/catgory/getNode',{
-  status:200,
-  data:{
-    test:'test'
-  }
-})
+// Mock.mock('http://119.23.174.214/wx/product/getProductByProductId',{
+//   status:200,
+//   data:{
+//     title:'重庆荣昌营养猪肉',
+//     unit:'500g',
+//     price:12,
+//     sales:34975,
+//     desc:'荣获全国营养猪肉奖的明星猪肉品牌 找回回锅肉的味道',
+//     imgUrl:'http://www.z4a.net/images/2017/08/19/zhurou.jpg'
+//   }
+// })
+// Mock.mock('http://119.23.174.214/wx/product/getProductReviewsByProductId',{
+//   status:200,
+//   data:[{
+//     createTime:'2017-8-19 20:10',
+//     user:{
+//       name:'梨涡浅笑',
+//       coverUrl:'http://www.z4a.net/images/2017/08/19/mulai.jpg'
+//     },
+//     rate:5,
+//     content:'荣获全国营养猪肉奖的明星猪肉品牌 找回回锅肉的味道,荣获全国营养猪肉奖的明星猪肉品牌 找回回锅肉的味道'
+//   },{
+//     createTime:'2017-8-19 19:32',
+//     user:{
+//       name:'似把君邀',
+//       coverUrl:'http://www.z4a.net/images/2017/08/19/mulai.jpg'
+//     },
+//     rate:4,
+//     content:'荣获全国营养猪肉奖的明星猪肉品牌 找回回锅肉的味道,荣获全国营养猪肉奖的明星猪肉品牌 找回回锅肉的味道'
+//   }]
+// })
+// Mock.mock('/catgory/getNode',{
+//   status:200,
+//   data:{
+//     test:'test'
+//   }
+// })
+// Mock.mock('http://119.23.174.214/user/readById',{
+//   status:200,
+//   data:[]
+// })

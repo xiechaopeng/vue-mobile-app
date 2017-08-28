@@ -1,6 +1,6 @@
 <template lang="html">
   <div class="goos-card" :style="{width:width}">
-    <div @click="clickImg" class="main" :style="{height:height,'background-image':'url('+data.imgUrl+')'}">
+    <div @click="clickImg" class="main" :style="{borderRadius:radius,boxShadow:boxShadow,height:height,'background-image':'url('+imgUrl +')'}">
       <slot name="subTitle">
         <div class="sub-title" v-if="subTitle">
           <span>{{subTitle}}</span>
@@ -10,8 +10,8 @@
     <slot name="title">
       <div class="title" v-if="data.title && !hidTitle">
         <span v-if="data.price" class="price">¥{{data.price}}</span>
-        <span class="tetx">
-          {{data.title}}
+        <span class="text">
+          {{title}}
         </span>
         <i @click="clickShop" v-if="data.price" class="material-icons add">add_shopping_cart</i>
       </div>
@@ -22,10 +22,6 @@
 <script>
 export default {
   props:{
-    goodsId:{
-      type:String,
-      default:'c4ca4238a0b923820dcc509a6f75849b'
-    },
     width:{
       type:String,
       default:'100%'
@@ -48,6 +44,22 @@ export default {
         return {}
       }
     },
+    imgUrl:{
+      type:String,
+      default:''
+    },
+    title:{
+      type:String,
+      default:''
+    },
+    boxShadow:{
+      type:String,
+      default:'0 3px 10px rgba(0, 0, 0, .156863), 0 3px 10px rgba(0, 0, 0, .227451)'
+    },
+    radius:{
+      type:String,
+      default:'4px'
+    }
   },
   methods:{
     clickImg(){
@@ -55,7 +67,9 @@ export default {
     },
     clickShop(){
       this.$emit('clickShop',this.data)
-      this.$store.commit('openShoppingCart',this.data)
+      let temp = this.data
+      temp.imgUrl = this.data.images
+      this.$store.commit('openShoppingCart',temp)
     }
   }
 }
@@ -67,7 +81,7 @@ export default {
     .main{
       position: relative;
       background-size: cover;
-      box-shadow: 2px 2px 2px rgba(0,0,0,.2);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, .156863), 0 3px 10px rgba(0, 0, 0, .227451);
       border-radius: 4px;
       .sub-title{
         position: absolute;
@@ -101,10 +115,12 @@ export default {
         font-size: .7rem;
         white-space: nowrap;
       }
-      .tetx{
+      .text{
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+        margin: 0 .5rem;
+        flex: 1
       }
       .add{
         color:#ff5252;

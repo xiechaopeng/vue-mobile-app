@@ -1,28 +1,31 @@
 <template lang="html">
   <div class="g-review" v-if="visible">
-    <div class="review" v-for="item,index in data">
+    <div class="review" v-for="item,index in data.items">
       <div class="g-user">
         <mu-paper class="user" circle
         :zDepth="2"
-        :style="{'background-image':'url('+item.user.coverUrl+')'}">
+        :style="{'background-image':'url('+item.user.profilePicture+')'}">
         </mu-paper>
       </div>
       <div class="content">
-        <span class="userName">
-          {{item.user.name}}:
-        </span>{{item.content}}
+        <div>
+          <span class="userName">
+            {{item.user.username}}:
+          </span>
+          {{item.productReviews.productReviews}}
+        </div>
         <div class="createTime">
           <span>
-            {{item.createTime}}
+            {{item.productReviews.updated}}
           </span>
           <div class="rate">
-            <i class="material-icons icon" v-for="n in item.rate">star</i>
-            <i class="material-icons icon" v-for="n in 5-item.rate">star_border</i>
+            <i class="material-icons icon" v-for="n in item.productReviews.rate">star</i>
+            <i class="material-icons icon" v-for="n in 5-item.productReviews.rate">star_border</i>
           </div>
         </div>
       </div>
     </div>
-    <mu-pagination style="justify-content:center;margin-top:1rem" :total="data.length" :current="1">
+    <mu-pagination style="justify-content:center;margin-top:1rem" :total="data.totalPage" :current="data.currentPage">
     </mu-pagination>
   </div>
 </template>
@@ -37,7 +40,11 @@ export default {
   },
   methods:{
     async getGoodsReview(){
-      let res = await this.api.getGoodsReview(this.$route.params.id)
+      let res = await this.api.getGoodsReview({
+        id:this.$route.params.id,
+        currentPage:"1",
+        pageSize:"5"
+      })
       this.data = res.data
       this.visible = true
     }
@@ -64,10 +71,13 @@ export default {
       }
     }
     .content{
-      text-indent: 5%;
       font-size: .75rem;
       width:calc(100% - 60px);
       color: #474a4f;
+      min-height: 50px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       .userName{
         color: #2196f3
       }

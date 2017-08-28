@@ -3,7 +3,7 @@
   <transition name="fade" mode="out-in">
     <router-view></router-view>
   </transition>
-  <bottom-nav fixed></bottom-nav>
+  <bottom-nav v-if="activePath!='/login' && activePath!='/reg'" fixed></bottom-nav>
   <shopping-cart-sheet></shopping-cart-sheet>
 </div>
 </template>
@@ -16,6 +16,14 @@ export default {
   components:{
     bottomNav,
     shoppingCartSheet
+  },
+  computed:{
+    activePath(){
+      if (this.$route.matched[0]) {
+        return this.$route.matched[0].path
+      }
+      return '/'
+    }
   }
 }
 </script>

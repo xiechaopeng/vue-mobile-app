@@ -1,8 +1,16 @@
 <template lang="html">
-  <div class="g-sc"
-  :style="{height:'calc(100vh - '+marginTop+' - '+marginBottom+')'}">
-    <div class="sc" v-scroll>
-      <slot></slot>
+  <div>
+    <div class="g-sc" v-if="height"
+    :style="{height:'calc('+height+' - '+marginTop+' - '+marginBottom+')'}">
+      <div class="sc" v-scroll>
+        <slot></slot>
+      </div>
+    </div>
+    <div class="g-sc" v-else v-scroll
+    :style="{height:'calc(100vh - '+marginTop+' - '+marginBottom+')'}">
+      <div class="sc" v-scroll>
+        <slot></slot>
+      </div>
     </div>
   </div>
 </template>
@@ -17,6 +25,10 @@ export default {
     marginBottom:{
       type:String,
       default:'0px'
+    },
+    height:{
+      type:String,
+      default:''
     }
   },
   methods:{
@@ -38,7 +50,8 @@ export default {
   .g-sc{
     width: 100%;
     position: relative;
-    overflow: hidden;
+    /*overflow: hidden;*/
+    -webkit-overflow-scrolling: touch;
   }
   .sc{
     position: absolute;
@@ -48,5 +61,6 @@ export default {
     left: 0;
     overflow-x: hidden;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 </style>

@@ -17,7 +17,18 @@ export default new Router({
     {
       path: '/classify',
       name: 'classify',
-      component: resolve => require(['@/pages/Classify'], resolve)
+      redirect:'/classify/index',
+      component: resolve => require(['@/pages/Classify'], resolve),
+      children:[
+        {
+          path:'index',
+          component: resolve => require(['@/pages/classify/index'], resolve),
+        },
+        {
+          path:'detail',
+          component: resolve => require(['@/pages/classify/detail'], resolve),
+        }
+      ]
     },
     {
       path: '/shoppingCart',
@@ -33,6 +44,21 @@ export default new Router({
       path: '/detail/:id',
       name: 'detail',
       component: resolve => require(['@/pages/Detail'], resolve),
+    },
+    {
+      path: '/user/:type',
+      name: 'user',
+      component: resolve => require(['@/pages/User'], resolve),
+    },
+    {
+      path: '/orderlist/:type',
+      name: 'orderlist',
+      component: resolve => require(['@/pages/Orderlist'], resolve),
+    },
+    {
+      path: '/addAddress',
+      name: 'addAddress',
+      component: resolve => require(['@/pages/AddAddress'], resolve),
     }
   ]
 })

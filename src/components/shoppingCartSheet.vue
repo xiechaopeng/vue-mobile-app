@@ -10,8 +10,8 @@
         <mu-paper class="img" :zDepth="2" :style="{'background-image':'url('+goodsData.imgUrl+')'}">
         </mu-paper>
         <div class="content">
-          <div class="header">
-            {{goodsData.title}}
+          <div class="header" v-if="goodsData.title">
+            {{goodsData.title.split('&')[0]}}
           </div>
           <div class="price">
             ¥{{goodsData.price}}

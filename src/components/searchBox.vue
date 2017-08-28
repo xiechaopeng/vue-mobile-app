@@ -7,7 +7,7 @@
       </mu-flat-button>
     </div>
     <div class="search-box">
-      <input type="text" placeholder="搜索你想要的食材" />
+      <input :style="{background:inputBg,color:inputColor}" type="text" placeholder="搜索你想要的食材" />
     </div>
     <div>
       <mu-icon-button>
@@ -27,6 +27,14 @@ export default {
     bgOpacity:{
       type: Number,
       default: 0
+    },
+    inputBg:{
+      type: String,
+      default: 'rgba(0,0,0,.2)'
+    },
+    inputColor:{
+      type: String,
+      default: '#424242'
     }
   },
   computed:{
@@ -70,11 +78,9 @@ export default {
             border: none;
             width: 100%;
             outline: none;
-            background-color: rgba(0,0,0,.2);
             padding-left: 10px;
             line-height: 24px;
             border-radius: 30px;
-            color: #424242;
         }
     }
 }
