@@ -5,7 +5,9 @@
       <mu-paper :zDepth="2">
         <img-div height="180px" radius="4px" imgUrl="http://www.z4a.net/images/2017/08/21/face_bg.jpg">
           <mu-paper class="user-cover" circle :zDepth="2">
-            <img-div height="70px" :imgUrl="userCover"></img-div>
+            <img-div height="70px" :imgUrl="userCover">
+              <input @change="coverChange" type="file" class="user-cover-file"/>
+            </img-div>
           </mu-paper>
         </img-div>
       </mu-paper>
@@ -24,7 +26,7 @@
           <span>我的订单</span>
         </div>
         <div class="more">
-          <span @click="$router.push('/orderlist/all')">
+          <span @click="$router.push('/orderlist/0')">
             所有订单
           </span>
           <i class="material-icons icon">chevron_right</i>
@@ -32,7 +34,7 @@
       </div>
       <div class="g-main">
         <template v-for="item,index in orderlist" v-if="index<3">
-          <mu-paper class="order-card" :zDepth="2" :style="{backgroundColor:item.bgColor,color:item.textColor||'#fff'}">
+          <mu-paper @click.native="$router.push('/orderlist/'+item.type)" class="order-card" :zDepth="2" :style="{backgroundColor:item.bgColor,color:item.textColor||'#fff'}">
             <div class="item">
               <div class="count">
                 {{item.list.length}}
@@ -50,15 +52,15 @@
           <span>售后</span>
         </div>
         <div class="more">
-          <span>
-            所有
+          <span @click="$router.push('/orderlist/0')">
+            所有订单
           </span>
           <i class="material-icons icon">chevron_right</i>
         </div>
       </div>
       <div class="g-main">
         <template v-for="item,index in orderlist" v-if="index>2">
-          <mu-paper class="order-card" :zDepth="2" :style="{backgroundColor:item.bgColor,color:item.textColor||'#fff'}">
+          <mu-paper @click.native="$router.push('/orderlist/'+item.type)" class="order-card" :zDepth="2" :style="{backgroundColor:item.bgColor,color:item.textColor||'#fff'}">
             <div class="item">
               <div class="count">
                 {{item.list.length}}
@@ -75,7 +77,7 @@
           <div>;</div>
           <span>收货地址</span>
         </div>
-        <div class="more">
+        <div class="more" @click="$router.push('/address')">
           <span>
             编辑
           </span>
@@ -83,12 +85,16 @@
         </div>
       </div>
       <div class="g-main">
-        <mu-paper class="address-card" :zDepth="2">
+        <mu-paper  :zDepth="2" style="width:100%">
           <div v-if="address==''" @click="$router.push('/addAddress')">还没有地址,点击添加吧~</div>
-          <div v-if="address">{{address.detail}}</div>
-          <div v-if="address">{{address.user}}</div>
-          <div v-if="address">{{address.phone}}</div>
-          <div class="default">{{address.default?'默认':'首址'}}</div>
+          <div v-else>
+            <div v-text-overflow class="address-card">
+              {{address.detail}}
+              {{address.user}}
+              <!-- {{address.phone}} -->
+              <span class="default">{{address.default?'默认':'首址'}}</span>
+            </div>
+          </div>
         </mu-paper>
       </div>
       <div style="padding:0 1%">
@@ -107,27 +113,27 @@
 <script>
 import myHeader from '@/components/header'
 export default {
-  components:{
+  components: {
     myHeader
   },
-  data(){
+  data() {
     return {
-      user:[],
-      userid:'',
-      headerBg:0,
-      userCover:'',
-      userName:'',
-      userDesc:'',
-      toDayCount:0,
-      readyPayCount:0,
-      finishCount:0,
+      user: [],
+      userid: '',
+      headerBg: 0,
+      userCover: 'http://www.z4a.net/images/2017/08/21/face_bg.jpg',
+      userName: '',
+      userDesc: '',
+      toDayCount: 0,
+      readyPayCount: 0,
+      finishCount: 0,
     }
   },
-  computed:{
-    address(){
+  computed: {
+    address() {
       let address = this.$store.state.address
       let defaultAddress = ''
-      address.forEach((item)=>{
+      address.forEach((item) => {
         if (item.default) {
           defaultAddress = item
         }
@@ -137,40 +143,84 @@ export default {
       }
       return defaultAddress
     },
-    orderlist(){
+    orderlist() {
       return this.$store.state.orderlist
     }
   },
-  methods:{
-    async getUserInfo(){
+  methods: {
+    async getUserInfo() {
       let res = await this.api.getUserInfo()
-      this.userCover = res.data.profilePicture || ''
-      this.userName =  res.data.nickname || res.data.username
+      this.userCover = res.data.profilePicture || 'http://www.z4a.net/images/2017/08/21/face_bg.jpg'
+      this.userName = res.data.nickname || res.data.username
       this.userDesc = res.data.desc || '彪悍人生不需要简述'
     },
-    async getAddress(){
+    async getAddress() {
       let res = await this.api.getUserAddress()
-      this.$store.commit('setAddress',res.data)
+      this.$store.commit('setAddress', res.data)
     },
-    scrollTopChange(val){
+    scrollTopChange(val) {
       if (val <= 95) {
         this.headerBg = val / 100
       } else {
         this.headerBg = 95 / 100
       }
     },
-    logout(){
+    async logout() {
       if (localStorage.getItem('token')) {
+        await this.api.logout()
         localStorage.removeItem('token')
+        this.$store.commit('setAddress', [])
+        this.$store.commit('setOrderlist', [])
         this.$router.replace('/')
       }
+    },
+    async getOrderlist(type) {
+      let res = await this.api.getOrderlist(type)
+      let orderlist = []
+      let status = {
+        1: 2,
+        2: 2,
+        3: 2,
+        4: 2,
+        5: 2,
+        7: 3
+      }
+      res.data.forEach((item) => {
+        orderlist.push({
+          title: item.firTitle,
+          type: status[item.status],
+          id: item.id,
+          time: item.createTime,
+          price: item.productNum,
+          count: item.productNum,
+          titleCount: item.firNum
+        })
+      })
+      this.$store.commit('setOrderlist', orderlist)
+    },
+    coverChange(e) {
+      let _this = this
+      let file = e.target
+      console.log(file);
+
+      if (file.files && file.files[0]) {
+        let reader = new FileReader();
+        reader.onload = function(evt) {
+          _this.userCover = evt.target.result
+        }
+        reader.readAsDataURL(file.files[0]);
+      } else {
+        _this.userCover = file.value
+      }
+
     }
   },
-  async mounted(){
+  async mounted() {
     if (localStorage.getItem('token')) {
-      if (this.userid=='') {
+      if (this.userid == '') {
         await this.getUserInfo()
         await this.getAddress()
+        await this.getOrderlist(-1)
       }
     }
   }
@@ -178,93 +228,100 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.g-face{
-  padding: 1%;
-  .user-cover{
-    width: 70px;
-    height: 70px;
-    position: absolute;
-    bottom: -35px;
-    left: calc(50% - 35px);
-    z-index: 1;
-    overflow: hidden;
-    // margin-bottom: 35px;
-  }
-  .user-name{
-    margin-top: 3rem;
-    text-align: center;
-  }
-  .user-desc{
-    color: #bbb;
-    text-align: center;
-    font-size: .7rem;
-    margin: .5rem 0
-  }
-  .user-div{
-    display: flex;
-    justify-content: space-between;
-    align-items:flex-end;
-    height: 15px;
-    margin-bottom: 1rem;
-    margin-top: .5rem;
-    .title{
-      display: flex;
-      div{
-        border-left: 3px solid #ff5252;
-        height: 15px;
-        color: #fff;
-        margin-top: 2px;
-        margin-right: .5rem
-      }
-    }
-    .more{
-      color: #ccc;
-      display: flex;
-      align-items:flex-end;
-      .icon{
-        font-size: 1.3rem;
-      }
-    }
-  }
-  .g-main{
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 1rem;
+.g-face {
     padding: 1%;
-    flex-wrap: wrap;
-    .order-card{
-      width: 30%;
-      height: 80px;
-      position: relative;
-      .item{
-        height: 80px;
+    .user-cover {
+        width: 70px;
+        height: 70px;
+        position: absolute;
+        bottom: -35px;
+        left: calc(50% - 35px);
+        z-index: 1;
+        overflow: hidden;
+        // margin-bottom: 35px;
+    }
+    .user-name {
+        margin-top: 3rem;
+        text-align: center;
+    }
+    .user-desc {
+        color: #bbb;
+        text-align: center;
+        font-size: 0.7rem;
+        margin: 0.5rem 0;
+    }
+    .user-div {
         display: flex;
-        flex-direction: column;
-        justify-content: space-around;
-        padding: 0 10px;
-        .count{
-          font-size: 2rem;
+        justify-content: space-between;
+        align-items: flex-end;
+        height: 15px;
+        margin-bottom: 1rem;
+        margin-top: 0.5rem;
+        .title {
+            display: flex;
+            div {
+                border-left: 3px solid #ff5252;
+                height: 15px;
+                color: #fff;
+                margin-top: 2px;
+                margin-right: 0.5rem;
+            }
         }
-        .span{
-          text-align: right;
-          font-size: .8rem
+        .more {
+            color: #ccc;
+            display: flex;
+            align-items: flex-end;
+            .icon {
+                font-size: 1.3rem;
+            }
         }
-      }
     }
-    .address-card{
-      width: 100%;
-      height: 30px;
-      line-height: 30px;
-      padding: 0 2%;
-      // padding-left: 5%;
-      display: flex;
-      justify-content: space-between;
-      .default{
-        &:last-child{
-          color: #bbb
+    .g-main {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        padding: 1%;
+        flex-wrap: wrap;
+        .order-card {
+            width: 30%;
+            height: 80px;
+            position: relative;
+            .item {
+                height: 80px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-around;
+                padding: 0 10px;
+                .count {
+                    font-size: 2rem;
+                }
+                .span {
+                    text-align: right;
+                    font-size: 0.8rem;
+                }
+            }
         }
-      }
+        .address-card {
+            width: 100%;
+            height: 30px;
+            line-height: 30px;
+            padding: 0 2%;
+            // padding-left: 5%;
+            display: flex;
+            justify-content: space-between;
+            .default {
+                &:last-child {
+                    color: #bbb;
+                }
+            }
+        }
     }
-  }
+}
+.user-cover-file {
+    position: absolute;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
 }
 </style>

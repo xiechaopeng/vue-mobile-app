@@ -3,9 +3,9 @@
     <mu-popup position="top" popupClass="topPopup" :overlay="false" :open="topPopup">
       {{popupText}}
     </mu-popup>
-    <my-header bgColor="#ff5252" textColor="#fff" :headerBg="0.95" :title="'菜篮（ '+shoppingCartList.length+' ）'"></my-header>
-    <scroll-continer marginBottom="56px" marginTop="48px">
-      <div style="padding:0 2% " v-for="item,index in shoppingCartList">
+    <my-header bgColor="#ff5252" textColor="#fff" :headerBg="0.95" :title="'菜篮（ '+cartCount+' ）'"></my-header>
+    <scroll-continer marginBottom="112px" marginTop="48px">
+      <div style="padding:0 2% " v-if="!item.hide" v-for="item,index in shoppingCartList">
         <div class="shoppingCarItem">
           <mu-paper class="img" :zDepth="2" :style="{'background-image':'url('+item.imgUrl+')'}">
           </mu-paper>
@@ -28,7 +28,7 @@
                 </div>
               </div>
               <div class="item control-item">
-                <div @click="$store.commit('popShoppingCartList',index)" class="del">删除</div>
+                <div @click="del(index)" class="del">删除</div>
                 <mu-checkbox :nativeValue="''+item.id" @change="checkChange" v-model="checkList"/>
               </div>
             </div>
@@ -36,9 +36,9 @@
         </div>
         <mu-divider/>
       </div>
-      <div v-if="shoppingCartList.length==0" class="shopping-none">
+      <div v-if="cartCount==0" class="shopping-none">
         <h2>菜篮子空空如也</h2>
-        <img src="../assets/cailan.jpg" alt="">
+        <img src="http://www.z4a.net/images/2017/09/03/cailan.cdb4344.jpg" alt="">
         <div>一定要做一个有<span style="color:#ff5252;font-size:1.1rem">梦想</span>的菜篮子↖(▔＾▔)↗ </div>
         <div>像楼上一样<span style="color:#ff5252;font-size:1.1rem">充实</span>自己↖(▔▽▔)↗ </div>
         <mu-raised-button label="满足你!" @click.native="$router.push('/')" secondary/>
@@ -46,14 +46,14 @@
     </scroll-continer>
     <mu-divider/>
     <div class="shoppingCart-bottom">
-      <mu-checkbox @change="allCheckChange(checkList.length)" :value="checkList.length==shoppingCartList.length" :label="'已选'+checkList.length+'个'"/>
+      <mu-checkbox @change="allCheckChange(checkList.length)" :value="checkList.length==cartCount" :label="'已选'+checkList.length+'个'"/>
       <div class="price">
         <span>
           总计：¥
         </span>
         <span class="totalPrice">{{totalPrice}}</span>
       </div>
-      <button class="btn" type="button" name="button">
+      <button @click="order" class="btn" type="button" name="button">
         去结算
       </button>
     </div>
@@ -80,13 +80,14 @@ export default {
       this.allCheck = this.shoppingCartList.length == val.length
     },
     allCheckChange(checkListlength){
-      console.log(checkListlength);
       if (this.shoppingCartList.length==checkListlength) {
         this.checkList = []
       }else {
         this.checkList = []
         this.shoppingCartList.forEach((item)=>{
-          this.checkList.push(''+item.id)
+          if (!item.hide) {
+            this.checkList.push(''+item.id)
+          }
         })
       }
     },
@@ -99,33 +100,70 @@ export default {
         if (item.count>1) {
           newCount--
         }else {
-          this.topPopup = true
-          this.popupText = '请至少购买一件、或者点击删除QAQ'
-          setTimeout(() => { this.topPopup = false }, 2000)
+          // this.topPopup = true
+          // this.popupText = '请至少购买一件、或者点击删除QAQ'
+          // setTimeout(() => { this.topPopup = false }, 2000)
+          alert('请至少购买一件、或者点击删除QAQ')
         }
       }
       this.$store.commit('shoppingCartListChangeCount',{
         index:index,
         count:newCount
       })
+    },
+    order(){
+      if (this.checkList.length>0) {
+        if (localStorage.token) {
+          this.$store.commit('setCheckList',this.checkList)
+          this.$router.push('/order')
+        }else {
+          // this.topPopup = true
+          // this.popupText = '请先登录再进行此操作'
+          // setTimeout(() => { this.topPopup = false }, 2000)
+          alert('请先登录再进行此操作')
+          this.$router.push('/user/login')
+        }
+      }else {
+        // this.topPopup = true
+        // this.popupText = '没有选择任何商品哦'
+        // setTimeout(() => { this.topPopup = false }, 2000)
+        alert('没有选择任何商品哦')
+      }
+    },
+    del(index){
+      this.checkList.splice(index,1)
+      this.$store.commit('popShoppingCartList',index)
     }
   },
   computed:{
     shoppingCartList(){
       return this.$store.state.shoppingCartList
     },
+    cartCount(){
+      let count = 0
+      let shoppingCartList = this.$store.state.shoppingCartList
+      shoppingCartList.forEach((item)=>{
+        if (!item.hide) {
+          count++
+        }
+      })
+      return count
+    },
     totalPrice(){
       let shoppingCartList = this.$store.state.shoppingCartList
       let totalPrice = 0
       shoppingCartList.forEach((item)=>{
         this.checkList.forEach((id)=>{
-          if (id==item.id) {
+          if (id==item.id && !item.hide) {
             totalPrice+= item.count*item.price
           }
         })
       })
       return totalPrice
     }
+  },
+  mounted(){
+    this.allCheckChange()
   }
 
 }
@@ -199,7 +237,7 @@ export default {
   .shoppingCart-bottom{
     height: 56px;
     display: flex;
-    position: fixed;
+    // position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;

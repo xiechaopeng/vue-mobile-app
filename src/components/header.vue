@@ -1,9 +1,13 @@
 <template lang="html">
   <div class="header" :class="{fixed:fixed}"
   :style="{color:textColor,background:bgColor?bgColor:'rgba(255,255,255,'+headerBg+')',boxShadow:headerBg>=0.95?'2px 2px 2px rgba(0,0,0,.2)':''}">
-    <mu-icon-button @click.native="$router.go(-1)"  icon="keyboard_arrow_left"/>
+    <slot name="left">
+      <mu-icon-button style="z-index:2" @click.native="$router.go(-1)"  icon="keyboard_arrow_left"/>
+    </slot>
     <slot name="title"><span style="font-size:1rem" v-if="title && headerBg>=0.95">{{title}}</span></slot>
-    <mu-icon-button icon="more_horiz"/>
+    <slot name="right">
+      <mu-icon-button style="z-index:2" icon="more_horiz"/>
+    </slot>
   </div>
 </template>
 

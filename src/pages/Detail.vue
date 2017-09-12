@@ -39,7 +39,12 @@ export default {
     async getGoodsById(){
       let res = await this.api.getGoodsById(this.$route.params.id)
       this.goods = res.data
-      this.visible = true
+      if (this.goods) {
+        this.visible = true
+      }else {
+        alert('无商品详情,即将返回!')
+        this.$router.go(-1)
+      }
     },
     scrollTopChange(val){
       if (val <= 95) {

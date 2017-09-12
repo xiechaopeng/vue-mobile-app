@@ -4,8 +4,11 @@
     <scroll-continer style="padding:0 1%" marginTop="48px" marginBottom="56px">
       <br>
       <template v-for="item,index in address">
-        <mu-switch v-if="item.type=='check'" labelLeft :label="item.label"/>
-        <mu-text-field :errorText="item.errText" :disabled="item.sheet" @click.native="inputClick(item,index)" v-else fullWidth v-model="item[item.props]" :hintText="item.label"/>
+        <div v-if="item.type=='check'" style="margin-bottom:2rem">
+          <mu-switch labelLeft :label="item.label"/>
+          <br>
+        </div>
+        <mu-text-field :errorText="item.errText" :disabled="item.sheet || item.disable" @click.native="inputClick(item,index)" v-else fullWidth v-model="item[item.props]" :hintText="item.label"/>
       </template>
       <mu-raised-button @click="addAddress" label="确认添加" class="add-address-btn" fullWidth secondary/>
     </scroll-continer>
@@ -60,11 +63,11 @@ export default {
   data() {
     return {
       bottomSheet:false,
-      city:city,
+      city:'',
       cityKey:'重庆',
       cityIndex:0,
-      district:district,
-      districtKey:'重庆',
+      district:{},
+      districtKey:'渝北区',
       districtIndex:0,
       addressIndex:0,
       address: [{
@@ -83,15 +86,17 @@ export default {
           area: '',
           props: 'area',
           errText: '',
-          label: '省市',
-          // sheet:true
+          label: '市、区',
+          // disable:true
+          sheet:true
         },
         {
           street: '',
           props: 'street',
           errText: '',
           label: '街道',
-          // sheet:true
+          // disable:true,
+          sheet:true
         },
         {
           address: '',
@@ -114,42 +119,72 @@ export default {
       let addressItem = this.address[this.addressIndex]
       if (this.addressIndex==2) {
         let cityKey = this.cityKey, cityIndex = this.cityIndex
-        addressItem[addressItem.props] = city[cityKey]+'-'+city[cityKey][cityIndex]
+        addressItem[addressItem.props] = cityKey+'-'+this.city[cityKey][cityIndex]
       }
       if (this.addressIndex==3) {
         let districtKey = this.districtKey, districtIndex = this.districtIndex
-        addressItem[addressItem.props] = district[districtKey][districtIndex]
+        addressItem[addressItem.props] = this.district[districtKey][districtIndex]
       }
       this.bottomSheet = false
     },
-    inputClick(item,index){
-      if (item.sheet) {
-        this.bottomSheet = true
+    async inputClick(item,index){
+      if (item.sheet && !item.disable) {
         this.addressIndex = index
+        if (index==2) {
+          this.bottomSheet = true
+          let res = await this.api.getArea()
+          let area = []
+          res.data.forEach((item)=>{
+            area.push(item.area)
+          })
+          this.city = {
+            '重庆':area
+          }
+        }
+        if (index==3) {
+          if (this.city) {
+            this.bottomSheet = true
+            let res = await this.api.getStreetByArea(this.city[this.cityKey][this.cityIndex])
+            let area = []
+            res.data.forEach((item)=>{
+              area.push(item.street)
+            })
+            let temp = {}
+            this.district = {}
+            this.district[this.city[this.cityKey][this.cityIndex]] = area
+          }else {
+            alert('请先选择市、区')
+          }
+        }
       }
     },
     addAddress(){
-      let nullCount = 0,data={}
-      this.address.forEach((item)=>{
-        data[item.props] = item[item.props]
-        if (item.props=='acquiescenceFlag') {
-          data['acquiescence'] = item[item.props]?"1":"0"
-        }else{
-          if (item[item.props]=='') {
-            nullCount++
-            item.errText = item.label + '为必填项'
-          }else {
-            item.errText = ''
+      if (localStorage.token) {
+        let nullCount = 0,data={}
+        this.address.forEach((item)=>{
+          data[item.props] = item[item.props]
+          if (item.props=='acquiescenceFlag') {
+            data['acquiescence'] = item[item.props]?"1":"0"
+          }else{
+            if (item[item.props]=='') {
+              nullCount++
+              item.errText = item.label + '为必填项'
+            }else {
+              item.errText = ''
+            }
+          }
+        })
+        if (nullCount==0) {
+          data.area = data.area.split('-')[1]
+          let res = this.api.addAddress(data)
+          if (res) {
+            this.$router.replace('/face')
           }
         }
-      })
-      console.log(nullCount);
-      if (nullCount==0) {
-        let res = this.api.addAddress(data)
-        if (res) {
-          this.$router.replace('/face')
-        }
+      }else {
+        alert('请先登录')
       }
+
     }
   }
 }
@@ -157,10 +192,7 @@ export default {
 
 <style lang="css">
 .add-address-btn{
-  position: absolute;
-  bottom: 10px;
-  left: 0;
-  width: 100%
+  margin-top: 2rem
 }
 .address-select{
   -webkit-overflow-scrolling: touch;

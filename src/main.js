@@ -22,6 +22,9 @@ Vue.component('longShadowBtn',longShadowBtn)
 Vue.component('goodsCard',goodsCard)
 Vue.component('imgDiv',imgDiv)
 
+//自定义全局指令
+import textOverflow from './directive/directive'
+
 //导入axios所有接口
 Vue.prototype.api = require('./api').default
 

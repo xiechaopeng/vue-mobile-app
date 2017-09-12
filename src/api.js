@@ -9,11 +9,11 @@ const api = axios.create({
 })
 
 api.interceptors.request.use(function(config) {
-  if(localStorage.getItem('token')) {
-    // config.headers.Authorization = `user-token ${localStorage.getItem('token')}`
-    // .replace(/(^\")|(\"$)/g, '')
-    config.headers['user-token'] = localStorage.getItem('token')
-	}
+  if (window.localStorage) {
+    if(localStorage.token) {
+      config.headers['user-token'] = localStorage.token
+  	}
+  }
   return config
 }, function(error) {
   return Promise.reject(error);
@@ -82,6 +82,9 @@ export default {
   reg(data){
     return api.post('/wx/user/register',data)
   },
+  logout(){
+    return api.post('/wx/user/logout')
+  },
   getUserInfo(){
     return api.post('/wx/user/getUser')
   },
@@ -90,5 +93,34 @@ export default {
   },
   addAddress(data){
     return api.post('/wx/address/save',data)
+  },
+  getOrderlist(status){
+    return api.post('/wx/order/getUserOrdersByStatus',{status:status})
+  },
+  order(data){
+    return api.post('/wx/order/saveOrderInfo',data)
+  },
+  cancelOrder(id){
+    return api.post('/wx/order/cancel',{id:id})
+  },
+  getArea(){
+    return api.post('/wx/district/getArea')
+  },
+  getStreetByArea(area){
+    return api.post('/wx/district/getStreetByArea',{area:area})
+  },
+  //修改地址信息
+  updateAddress(data){
+    return api.post('/wx/address/updateAddressById',data)
+  },
+  //删除地址
+  deleteAddress(id){
+    return api.post('/wx/address/delteAddressById',{id:id})
+  },
+  //搜索
+  search(str){
+    return api.post('/wx/search/query',{
+      parameter:str
+    })
   }
 }

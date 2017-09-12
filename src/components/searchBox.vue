@@ -6,10 +6,10 @@
         <div>{{location}}</div>
       </mu-flat-button>
     </div>
-    <div class="search-box">
-      <input :style="{background:inputBg,color:inputColor}" type="text" placeholder="搜索你想要的食材" />
+    <div class="search-box" @click="$router.push('/search')">
+      <input :style="{background:inputBg,color:inputColor}" type="text" placeholder="搜索你想要的商品" />
     </div>
-    <div>
+    <div @click="$router.push('/search')">
       <mu-icon-button>
         <mu-icon :size="20" value="search" />
       </mu-icon-button>
@@ -52,7 +52,7 @@ export default {
   },
   data() {
     return {
-      location: '贵港',
+      location: '重庆',
     }
   }
 }
@@ -65,7 +65,7 @@ export default {
   left: 0;
   top: 0;
   overflow: hidden;
-  z-index: 1
+  z-index: 2
 }
 
 .g-search {

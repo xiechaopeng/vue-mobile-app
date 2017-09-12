@@ -9,11 +9,13 @@
     </div>
     <slot name="title">
       <div class="title" v-if="data.title && !hidTitle">
-        <span v-if="data.price" class="price">¥{{data.price}}</span>
-        <span class="text">
+        <div class="text" v-text-overflow="2">
           {{title}}
-        </span>
-        <i @click="clickShop" v-if="data.price" class="material-icons add">add_shopping_cart</i>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span v-if="data.price" class="price">¥{{data.price}}</span>
+          <i @click="clickShop" v-if="data.price" class="material-icons add">add_shopping_cart</i>
+        </div>
       </div>
     </slot>
   </div>
@@ -107,7 +109,7 @@ export default {
       width: 100%;
       // text-align: center;
       margin-top: .5rem;
-      display: flex;
+      // display: flex;
       justify-content: space-between;
       align-items: center;
       .price{
@@ -116,11 +118,8 @@ export default {
         white-space: nowrap;
       }
       .text{
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        margin: 0 .5rem;
-        flex: 1
+        font-size: 10px;
+        max-height: 36px;
       }
       .add{
         color:#ff5252;

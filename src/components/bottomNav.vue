@@ -17,8 +17,8 @@
       :key="index"
       :icon="item.icon"
       v-else>
-        <div style="position:absolute;right:10%;top:1%" v-if="shoppingCartList.length>0">
-          <mu-badge :content="''+shoppingCartList.length" badgeClass="badgeClass" circle secondary>
+        <div style="position:absolute;right:10%;top:1%" v-if="cartCount>0">
+          <mu-badge :content="''+cartCount" badgeClass="badgeClass" circle secondary>
           </mu-badge>
         </div>
       </mu-bottom-nav-item>
@@ -67,8 +67,16 @@ export default {
       }
       return '/'
     },
-    shoppingCartList(){
-      return this.$store.state.shoppingCartList
+    cartCount(){
+      let count = 0
+      let shoppingCartList = this.$store.state.shoppingCartList
+      
+      shoppingCartList.forEach((item)=>{
+        if (!item.hide) {
+          count++
+        }
+      })
+      return count
     }
   },
   methods: {

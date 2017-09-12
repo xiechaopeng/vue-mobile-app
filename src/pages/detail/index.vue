@@ -44,7 +44,7 @@ export default {
 
 <style lang="scss" scoped>
   .index{
-    height: calc(100vh - 45vh - 48px - 56px);
+    min-height: calc(100vh - 45vh - 48px - 56px);
     background: #474a4f;
     color: rgba(255, 255, 255, 0.7);
     padding: 3%;

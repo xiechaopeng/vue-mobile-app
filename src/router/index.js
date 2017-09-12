@@ -1,6 +1,20 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
+import Index from '@/pages/Index'
+import Classify from '@/pages/Classify'
+import ClassifyIndex from '@/pages/classify/index'
+import ClassifyDetail from '@/pages/classify/detail'
+import ShoppingCart from '@/pages/ShoppingCart'
+import Face from '@/pages/Face'
+import Detail from '@/pages/Detail'
+import User from '@/pages/User'
+import Orderlist from '@/pages/Orderlist'
+import Address from '@/pages/Address'
+import AddAddress from '@/pages/AddAddress'
+import Order from '@/pages/Order'
+import OrderSuccess from '@/pages/OrderSuccess'
+import Search from '@/pages/Search'
+import nofound from '@/pages/404'
 Vue.use(Router)
 
 export default new Router({
@@ -12,53 +26,74 @@ export default new Router({
     {
       path: '/index',
       name: 'index',
-      component: resolve => require(['@/pages/Index'], resolve)
+      component: Index
     },
     {
       path: '/classify',
       name: 'classify',
       redirect:'/classify/index',
-      component: resolve => require(['@/pages/Classify'], resolve),
+      component: Classify,
       children:[
         {
           path:'index',
-          component: resolve => require(['@/pages/classify/index'], resolve),
+          component: ClassifyIndex
         },
         {
           path:'detail',
-          component: resolve => require(['@/pages/classify/detail'], resolve),
+          component: ClassifyDetail
         }
       ]
     },
     {
       path: '/shoppingCart',
       name: 'shoppingCart',
-      component: resolve => require(['@/pages/ShoppingCart'], resolve)
+      component: ShoppingCart
     },
     {
       path: '/face',
       name: 'face',
-      component: resolve => require(['@/pages/Face'], resolve)
+      component: Face
     },
     {
       path: '/detail/:id',
       name: 'detail',
-      component: resolve => require(['@/pages/Detail'], resolve),
+      component: Detail
     },
     {
       path: '/user/:type',
       name: 'user',
-      component: resolve => require(['@/pages/User'], resolve),
+      component: User
     },
     {
       path: '/orderlist/:type',
       name: 'orderlist',
-      component: resolve => require(['@/pages/Orderlist'], resolve),
+      component: Orderlist
+    },
+    {
+      path: '/address',
+      name: 'address',
+      component: Address
     },
     {
       path: '/addAddress',
       name: 'addAddress',
-      component: resolve => require(['@/pages/AddAddress'], resolve),
-    }
+      component: AddAddress
+    },
+    {
+      path: '/order',
+      name: 'order',
+      component: Order
+    },
+    {
+      path:'/orderSuccess',
+      name: 'orderSuccess',
+      component: OrderSuccess
+    },
+    {
+      path:'/search',
+      name:'search',
+      component: Search
+    },
+    { path: '*', component: nofound }
   ]
 })

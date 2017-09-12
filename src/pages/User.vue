@@ -122,7 +122,7 @@ export default {
         })
         if (res) {
           localStorage.setItem('token',res.data)
-          this.$router.replace('/')
+          this.$router.replace('/face')
         }
       } else {
         this.textField()
