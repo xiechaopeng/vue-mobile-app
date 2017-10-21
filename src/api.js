@@ -20,7 +20,6 @@ api.interceptors.request.use(function(config) {
 });
 api.interceptors.response.use(response => {
   if (response.data.status === 200) {
-    console.log('请求成功了!!!!');
     return response.data
   } else {
     alert(response.data.msg||'数据获取失败')
@@ -64,6 +63,22 @@ export default {
   getGoodsReview(data) {
     return api.post('/wx/product/getProductReviewsByProductId/' + data.id, data)
   },
+  //获取收藏商品列表
+  getCollections(){
+    return api.post('/wx/collection/getCollections')
+  },
+  //是否已经收藏
+  goods_isCollection(id){
+    return api.post('/wx/collection/isCollection',{id:id})
+  },
+  //收藏商品
+  goods_collection(id){
+    return api.post('/wx/collection/addCollection',{id:id})
+  },
+  //取消收藏
+  goods_delCollections(data){
+    return api.post('/wx/collection/delCollections',data)
+  },
   //获取用户信息
   getUserInfo(id) {
     return api.post('/user/readById', {
@@ -84,6 +99,9 @@ export default {
   },
   logout(){
     return api.post('/wx/user/logout')
+  },
+  forgot(data){
+    return api.post('/wx/user/forgot',data)
   },
   getUserInfo(){
     return api.post('/wx/user/getUser')
@@ -122,5 +140,25 @@ export default {
     return api.post('/wx/search/query',{
       parameter:str
     })
+  },
+  //获取经常购买商品
+  getOften(){
+    return api.post('/wx/user/getOftenPurchased')
+  },
+  //获取特价商品
+  getDiscount(){
+    return api.post('/wx/product/getDiscountProduct',{
+      currentPage:1,
+      pageSize:20
+    })
+  },
+  //获取openid
+  getOpenid(code){
+    return api.post('/wx/user/obtainOpenId',{
+      code:code
+    })
+  },
+  getOrderlistCount(){
+    return api.post('/wx/order/getUserOrdersNum')
   }
 }

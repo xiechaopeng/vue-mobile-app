@@ -26,7 +26,7 @@
           <span>我的订单</span>
         </div>
         <div class="more">
-          <span @click="$router.push('/orderlist/0')">
+          <span @click="$router.push('/orderlist/-1')">
             所有订单
           </span>
           <i class="material-icons icon">chevron_right</i>
@@ -37,16 +37,16 @@
           <mu-paper @click.native="$router.push('/orderlist/'+item.type)" class="order-card" :zDepth="2" :style="{backgroundColor:item.bgColor,color:item.textColor||'#fff'}">
             <div class="item">
               <div class="count">
-                {{item.list.length}}
+                {{item.count}}
               </div>
               <div class="span">
-                {{item.msg[item.dateType] || item.msg}}
+                {{item.msg}}
               </div>
             </div>
           </mu-paper>
         </template>
       </div>
-      <div class="user-div">
+      <!-- <div class="user-div">
         <div class="title">
           <div>;</div>
           <span>售后</span>
@@ -57,7 +57,7 @@
           </span>
           <i class="material-icons icon">chevron_right</i>
         </div>
-      </div>
+      </div> -->
       <div class="g-main">
         <template v-for="item,index in orderlist" v-if="index>2">
           <mu-paper @click.native="$router.push('/orderlist/'+item.type)" class="order-card" :zDepth="2" :style="{backgroundColor:item.bgColor,color:item.textColor||'#fff'}">
@@ -127,6 +127,22 @@ export default {
       toDayCount: 0,
       readyPayCount: 0,
       finishCount: 0,
+      orderlist:[{
+        type:2,
+        msg:'已支付',
+        bgColor:'#66bb6a',
+        count:0
+      },{
+        type:1,
+        msg:'待付款',
+        bgColor:'#ef5350',
+        count:0
+      },{
+        type:7,//日期订单
+        msg:'已完成',
+        bgColor:'#3f51b5',
+        count:0
+      }]
     }
   },
   computed: {
@@ -142,21 +158,29 @@ export default {
         defaultAddress = address[0]
       }
       return defaultAddress
-    },
-    orderlist() {
-      return this.$store.state.orderlist
     }
   },
   methods: {
     async getUserInfo() {
       let res = await this.api.getUserInfo()
-      this.userCover = res.data.profilePicture || 'http://www.z4a.net/images/2017/08/21/face_bg.jpg'
-      this.userName = res.data.nickname || res.data.username
-      this.userDesc = res.data.desc || '彪悍人生不需要简述'
+      if (res) {
+        this.userCover = res.data.profilePicture || 'http://www.z4a.net/images/2017/08/21/face_bg.jpg'
+        this.userName = res.data.nickname || res.data.username
+        this.userDesc = res.data.desc || '彪悍人生不需要简述'
+        return true
+      }else {
+        return false
+
+      }
     },
     async getAddress() {
       let res = await this.api.getUserAddress()
-      this.$store.commit('setAddress', res.data)
+      if (res) {
+        this.$store.commit('setAddress', res.data)
+        return true
+      }else {
+        return false
+      }
     },
     scrollTopChange(val) {
       if (val <= 95) {
@@ -167,28 +191,20 @@ export default {
     },
     async logout() {
       if (localStorage.getItem('token')) {
-        await this.api.logout()
         localStorage.removeItem('token')
         this.$store.commit('setAddress', [])
         this.$store.commit('setOrderlist', [])
         this.$router.replace('/')
+        await this.api.logout()
       }
     },
     async getOrderlist(type) {
-      let res = await this.api.getOrderlist(type)
       let orderlist = []
-      let status = {
-        1: 2,
-        2: 2,
-        3: 2,
-        4: 2,
-        5: 2,
-        7: 3
-      }
+      let res = await this.api.getOrderlist(type)
       res.data.forEach((item) => {
         orderlist.push({
           title: item.firTitle,
-          type: status[item.status],
+          type: type,
           id: item.id,
           time: item.createTime,
           price: item.productNum,
@@ -201,8 +217,6 @@ export default {
     coverChange(e) {
       let _this = this
       let file = e.target
-      console.log(file);
-
       if (file.files && file.files[0]) {
         let reader = new FileReader();
         reader.onload = function(evt) {
@@ -212,15 +226,34 @@ export default {
       } else {
         _this.userCover = file.value
       }
-
+    },
+    async getOrderlistCount(){
+      let res = await this.api.getOrderlistCount()
+      if (res) {
+        let data = res.data
+        res.data.forEach((item)=>{
+          let status = Number(item.status)
+          if (status==1) {
+            this.orderlist[1].count = item.num
+          }
+          if (status==7) {
+            this.orderlist[2].count = item.num
+          }
+          if (status==2) {
+            this.orderlist[0].count = item.num
+          }
+        })
+      }
     }
   },
   async mounted() {
     if (localStorage.getItem('token')) {
       if (this.userid == '') {
-        await this.getUserInfo()
-        await this.getAddress()
-        await this.getOrderlist(-1)
+        if (await this.getUserInfo()) {
+          if (await this.getAddress()) {
+            await this.getOrderlistCount()
+          }
+        }
       }
     }
   }

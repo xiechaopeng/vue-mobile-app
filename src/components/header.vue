@@ -6,7 +6,9 @@
     </slot>
     <slot name="title"><span style="font-size:1rem" v-if="title && headerBg>=0.95">{{title}}</span></slot>
     <slot name="right">
-      <mu-icon-button style="z-index:2" icon="more_horiz"/>
+      <div style="opacity:0">
+        <mu-icon-button style="z-index:2" icon="more_horiz"/>
+      </div>
     </slot>
   </div>
 </template>

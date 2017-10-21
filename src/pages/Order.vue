@@ -8,7 +8,7 @@
           </mu-paper>
           <div class="content">
             <div class="flex">
-              {{item.title.split('&')[0]}}
+              <span v-html="item.title.split('&')[0]"></span>
             </div>
             <div class="flex grey">
               <div class="item">
@@ -83,7 +83,7 @@
         </span>
       </div>
       <button @click="submit" class="btn" type="button" name="button">
-        立刻下单
+        立刻付款
       </button>
     </div>
   </div>
@@ -131,7 +131,6 @@ export default {
   },
   computed: {
     checkList() {
-      console.log(this.$store.state.checkList);
       return this.$store.state.checkList
     },
     totalPrice() {
@@ -145,7 +144,6 @@ export default {
     },
     address(){
       let address = this.$store.state.address
-
       return address
     },
     orderShipping(){
@@ -186,11 +184,22 @@ export default {
           saleOrder:this.saleOrder,
           orderDetails:orderDetails
         }
+        req.openId = localStorage.openid
         let res = await this.api.order(req)
         if (res) {
           this.$store.commit('order',this.checkList)
           this.$store.commit('setCheckList',[])
-          this.$router.replace('/orderSuccess')
+          // let {appId,timeStamp,nonceStr,signType,paySign} = res.data
+          // let wxpackage = res.data.package
+          this.pay({
+            appId:res.data.appId,
+            timeStamp:res.data.timeStamp,
+            nonceStr:res.data.nonceStr,
+            signType:res.data.signType,
+            paySign:res.data.paySign,
+            package:res.data.package
+          })
+          // this.$router.replace(`/orderSuccess?appId=${appId}&timeStamp=${timeStamp}&nonceStr=${nonceStr}&package=${wxpackage}&signType=${signType}&paySign=${paySign}`)
         }
       }else {
         alert('请至少填写收货地址和联系方式')
@@ -199,6 +208,37 @@ export default {
     async getAddress(){
       let res = await this.api.getUserAddress()
       this.$store.commit('setAddress',res.data)
+    },
+    pay(rq) {
+      let _this = this
+      function onBridgeReady() {
+        let timeStamp = Number(Date.parse(new Date()))/1000
+        WeixinJSBridge.invoke(
+          'getBrandWCPayRequest', {
+            "appId": rq.appId, //公众号名称，由商户传入
+            "timeStamp": rq.timeStamp, //时间戳，自1970年以来的秒数
+            "nonceStr": rq.nonceStr, //随机串
+            "package": rq.package,
+            "signType": rq.signType, //微信签名方式：
+            "paySign": rq.paySign //微信签名
+          },
+          function(res) {
+            if (res.err_msg == "get_brand_wcpay_request:ok") {
+              _this.$router.replace('/orderSuccess')
+            } // 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回    ok，但并不保证它绝对可靠。
+          }
+        );
+      }
+      if (typeof WeixinJSBridge == "undefined") {
+        if (document.addEventListener) {
+          document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+        } else if (document.attachEvent) {
+          document.attachEvent('WeixinJSBridgeReady', onBridgeReady);
+          document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+        }
+      } else {
+        onBridgeReady()
+      }
     }
   },
   mounted(){

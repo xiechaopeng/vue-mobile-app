@@ -17,7 +17,7 @@
     <mu-text-field v-model="user.username" :errorText="phoneErrText" @blur="checkPhone" hintText="手机号" fullWidth />
     <div v-if="submitType=='reg'" style="display:flex">
       <mu-text-field :errorText="codeErrText" v-model="user.identifyingCode" hintText="验证码" fullWidth />
-      <mu-flat-button style="margin-top:10px" v-if="codeTimeOut>0" @click="test" :label="codeTimeOut+'s后可重发'" labelPosition="before" icon="message" secondary/>
+      <mu-flat-button style="margin-top:10px" v-if="codeTimeOut>0" :label="codeTimeOut+'s后可重发'" labelPosition="before" icon="message" secondary/>
       <mu-flat-button style="margin-top:10px" v-else @click="getCode" label="获取验证码" labelPosition="before" icon="message" secondary/>
     </div>
     <mu-text-field v-model="user.password" :errorText="pswErrText" v-if="submitType=='login'" hintText="密码" type="password" fullWidth />
@@ -25,7 +25,10 @@
     <mu-raised-button v-if="submitType=='login'" label="登录" @click.native="login" secondary fullWidth/>
     <mu-raised-button v-if="submitType=='reg'" label="注册" @click.native="reg" secondary fullWidth/>
     <div style="font-size:.8rem;color:#bbb;text-align:center;margin:1rem 0">
+      <span style="float:left" @click="dialog=true">忘记密码?</span>
       {{userSlogen[submitType]}}
+      <span v-if="submitType=='login'" @click="submitType='reg'" style="float:right">我想注册</span>
+      <span v-if="submitType=='reg'" @click="submitType='login'" style="float:right">我想登录</span>
     </div>
     <!-- <div style="position:fixed;width:100%;z-index:1;bottom:0;padding-bottom:1rem">
       <div style="font-size:.8rem;color:#bbb;text-align:center;margin:1rem 0">
@@ -43,6 +46,23 @@
         </mu-float-button>
       </div>
     </div> -->
+    <mu-dialog :open="dialog" title="" @close="close">
+      <div style="position:relative">
+        <div style="position:absolute;right:0;top:0;z-index:1" @click="close">
+          <mu-float-button style="width:30px;height:30px;font-size:12px;background:#fff;color:#ff5252" mini>
+            <mu-icon :size="14" value="close"/>
+          </mu-float-button>
+        </div>
+        <mu-text-field label="手机号" hintText="输入手机号" :errorText="phoneErrText" @blur="checkPhone"  v-model="user.username" fullWidth/><br/>
+        <div style="display:flex">
+          <mu-text-field :errorText="codeErrText" v-model="user.identifyingCode" hintText="验证码" fullWidth />
+          <mu-flat-button style="margin-top:10px" v-if="codeTimeOut>0" :label="codeTimeOut+'s后可重发'" labelPosition="before" icon="message" secondary/>
+          <mu-flat-button style="margin-top:10px" v-else @click="getCode" label="获取验证码" labelPosition="before" icon="message" secondary/>
+        </div>
+        <mu-text-field type="password" v-model="user.password" :errorText="pswErrText" label="设置新密码" hintText="输入新密码"/><br/>
+        <mu-raised-button slot="actions" @click.native="forgot" secondary fullWidth label="确认"/>
+      </div>
+    </mu-dialog>
   </div>
 </template>
 
@@ -68,7 +88,8 @@ export default {
         identifyingCode: '',
         password: ''
       },
-      codeTimeOut:0
+      codeTimeOut:0,
+      dialog:false
     }
   },
   watch:{
@@ -90,7 +111,32 @@ export default {
     this.submitType = this.$route.params.type
   },
   methods: {
-    test(){
+    close(){
+      this.dialog = false
+      this.clearErr()
+    },
+    async forgot(){
+      if (this.user.username != '' && this.user.password != '' && this.user.identifyingCode !='') {
+        let res = await this.api.forgot({
+          username:this.user.username,
+          password:md5(this.user.password),
+          identifyingCode:this.user.identifyingCode
+        })
+        if (res) {
+          alert('密码修改成功,请使用新密码登录')
+          this.user.password = ''
+          this.user.identifyingCode = ''
+          this.clearErr()
+        }
+        this.dialog = false
+      }else {
+        this.textField()
+      }
+    },
+    clearErr(){
+      this.phoneErrText = ''
+      this.pswErrText = ''
+      this.codeErrText = ''
     },
     textField(){
       if (this.user.username == '') {

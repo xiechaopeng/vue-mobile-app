@@ -12,6 +12,7 @@
         <component :is="component" :data="goods"></component>
       </transition>
     </scroll-continer>
+    <mu-checkbox v-model="isCollection" @change="collectionChange" class="like" uncheckIcon="favorite_border" checkedIcon="favorite"/>
     <mu-float-button @click.native="shoppingCart" secondary icon="add_shopping_cart" class="add"/>
   </div>
 </template>
@@ -32,7 +33,8 @@ export default {
       nav:['商品','详情','评论'],
       headerBg:0,
       goods:'',
-      component:'index'
+      component:'index',
+      isCollection:false
     }
   },
   methods:{
@@ -40,10 +42,17 @@ export default {
       let res = await this.api.getGoodsById(this.$route.params.id)
       this.goods = res.data
       if (this.goods) {
+        await this.goods_isCollection()
         this.visible = true
       }else {
         alert('无商品详情,即将返回!')
         this.$router.go(-1)
+      }
+    },
+    async goods_isCollection(){
+      let res = await this.api.goods_isCollection(this.$route.params.id)
+      if (res) {
+        this.isCollection = res.data
       }
     },
     scrollTopChange(val){
@@ -66,6 +75,13 @@ export default {
         stock:this.goods.stock,
         id:this.goods.id
       })
+    },
+    async collectionChange(val){
+      if (true) {
+        await this.api.goods_collection(this.$route.params.id)
+      }else {
+        await this.api.goods_delCollections([{id:this.$route.params.id}])
+      }
     }
   },
   mounted(){
@@ -82,6 +98,14 @@ export default {
     bottom: 80px;
     width: 48px;
     height: 48px;
+  }
+  .like{
+    position: fixed;
+    z-index: 1;
+    right: calc(6% + 5px);
+    bottom:133px;
+    width: 30px;
+    height: 30px;
   }
   .img-continer{
     background-size: cover;

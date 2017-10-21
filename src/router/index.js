@@ -14,6 +14,7 @@ import AddAddress from '@/pages/AddAddress'
 import Order from '@/pages/Order'
 import OrderSuccess from '@/pages/OrderSuccess'
 import Search from '@/pages/Search'
+import GoodList from '@/pages/GoodList'
 import nofound from '@/pages/404'
 Vue.use(Router)
 
@@ -93,6 +94,11 @@ export default new Router({
       path:'/search',
       name:'search',
       component: Search
+    },
+    {
+      path:'/goodList/:type',
+      name:'goodList',
+      component: GoodList
     },
     { path: '*', component: nofound }
   ]

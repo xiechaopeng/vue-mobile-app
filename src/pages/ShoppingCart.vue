@@ -11,7 +11,7 @@
           </mu-paper>
           <div class="content">
             <div class="flex">
-              <div class="title">{{item.title}}</div>
+              <div class="title" v-html="item.title"></div>
               <div class="control">
                 <i @click="changeCount('del',item,index)" class="material-icons icon">remove_circle</i>
                 <input type="text" v-model="item.count">
@@ -269,10 +269,11 @@ export default {
       margin-bottom: 1rem;
     }
     img{
-      width: 100%;
+      // width: 100%;
       border-radius: 4px;
       box-shadow: 0 3px 10px rgba(0, 0, 0, .156863), 0 3px 10px rgba(0, 0, 0, .227451);
       margin-bottom: 1rem;
+      height: 30vh
     }
   }
 </style>

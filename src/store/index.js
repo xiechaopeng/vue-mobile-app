@@ -15,37 +15,38 @@ export function createStore () {
       checkList:[],
       categoryList:[],
       orderlist:[{
-        type:1,
-        msg:'待发货',
+        type:2,
+        msg:'已支付',
         list:[],
         bgColor:'#66bb6a'
       },{
-        type:2,
+        type:1,
         msg:'待付款',
         list:[],
         bgColor:'#ef5350'
       },{
-        type:3,//日期订单
-        dateType:0,
-        msg:['今日的','近1周','近1月','近3月'],
-        list:[],
-        bgColor:'#ffb300'
-      },{
-        type:4,
-        msg:'待确认',
-        list:[],
-        bgColor:'#039be5'
-      },{
-        type:5,
-        msg:'待评价',
-        list:[],
-        bgColor:'#00bcd4'
-      },{
-        type:6,
+        type:7,//日期订单
         msg:'已完成',
         list:[],
         bgColor:'#3f51b5'
-      }],
+      },
+      // {
+      //   type:4,
+      //   msg:'待确认',
+      //   list:[],
+      //   bgColor:'#039be5'
+      // },{
+      //   type:5,
+      //   msg:'待评价',
+      //   list:[],
+      //   bgColor:'#00bcd4'
+      // },{
+      //   type:6,
+      //   msg:'已完成',
+      //   list:[],
+      //   bgColor:'#3f51b5'
+      // }
+      ],
       address:[
         // {
         //   phone:18983847794,

@@ -11,7 +11,7 @@
         </mu-paper>
         <div class="content">
           <div class="header" v-if="goodsData.title">
-            {{goodsData.title.split('&')[0]}}
+            <span v-html="goodsData.title.split('&')[0]"></span>
           </div>
           <div class="price">
             ¥{{goodsData.price}}
@@ -35,9 +35,6 @@
       </div>
       <mu-raised-button @click.native="intoShoppingCart" secondary :label="count*goodsData.price>0?'甩进菜篮（ '+count*goodsData.price+'元 ）':'甩进菜篮'" fullWidth/>
     </div>
-    <mu-popup position="top" popupClass="topPopup" :overlay="false" :open="topPopup">
-      {{popupText}}
-    </mu-popup>
   </mu-bottom-sheet>
 </template>
 
@@ -46,9 +43,7 @@ export default {
   data() {
     return {
       bottomSheet: false,
-      count:0,
-      topPopup:false,
-      popupText:''
+      count:1
     }
   },
   computed: {
@@ -60,7 +55,7 @@ export default {
   },
   methods: {
     closeBottomSheet() {
-      this.count = 0
+      this.count = 1
       this.$store.commit('closeShoppingCart')
     },
     countAdd(){
@@ -73,9 +68,7 @@ export default {
     },
     intoShoppingCart(){
       if (this.count<1) {
-        this.topPopup = true
-        this.popupText = '购买数量不能为0'
-        setTimeout(() => { this.topPopup = false }, 2000)
+        alert('购买数量不能为0')
       }else{
         let payload = this.goodsData
         payload.count = this.count

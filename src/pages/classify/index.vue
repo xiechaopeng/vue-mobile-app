@@ -73,7 +73,6 @@ export default {
     },
     async getCatgory(){
       let res = await this.api.getCatgory(0)
-      console.log(res);
       this.classifyList=res.data
     },
 

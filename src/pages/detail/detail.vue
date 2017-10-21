@@ -13,8 +13,8 @@ export default {
   methods:{
     async getGoodsDetailById(){
       let res = await this.api.getGoodsDetailById(this.$route.params.id)
-      let html = res.data.productDescription
-      this.data =html.split('<p>')[1].split('</p>')[0]
+      let html = res.data.productDescription || ''
+      this.data =html
     }
   },
   mounted(){

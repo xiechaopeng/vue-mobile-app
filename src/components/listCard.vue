@@ -1,43 +1,46 @@
 <template lang="html">
-  <div class="list-card">
-    <div class="list-card-item">
-      <div style="color:#616161;padding-left:.5rem" :style="{'border-left':'2px solid '+type[data.type].bgColor}">
-        订单号:{{data.id}}
+  <div>
+    <div class="list-card">
+      <div class="list-card-item">
+        <div style="color:#616161;padding-left:.5rem" :style="{'border-left':'2px solid '+type(data.type).bgColor}">
+          订单号:{{data.id}}
+        </div>
+        <div class="list-card-type" :style="{background:type(data.type).bgColor}">
+          {{type(data.type).text}}
+        </div>
       </div>
-      <div class="list-card-type" :style="{background:type[data.type].bgColor}">
-        {{type[data.type].text}}
+      <mu-divider/>
+      <div class="list-card-item">
+        <div class="list-card-item-title">
+          {{data.title.split('&')[0]}}&nbsp;&nbsp;
+        </div>
+        <div>
+          &nbsp;&nbsp;&times;{{data.titleCount}}
+        </div>
       </div>
-    </div>
-    <mu-divider/>
-    <div class="list-card-item">
-      <div class="list-card-item-title">
-        {{data.title.split('&')[0]}}&nbsp;&nbsp;
+      <div v-if="data.count>1" style="color:#aaa">
+        等{{data.count-1}}件商品
       </div>
-      <div>
-        &nbsp;&nbsp;&times;{{data.titleCount}}
+      <div class="list-card-item">
+        <div style="color:#bbb">
+          {{data.time}}
+        </div>
+        <div style="color:#ff5252">
+          共：¥ {{data.price}}
+        </div>
       </div>
-    </div>
-    <div v-if="data.count>1" style="color:#aaa">
-      等{{data.count-1}}件商品
-    </div>
-    <div class="list-card-item">
-      <div style="color:#bbb">
-        {{data.time}}
-      </div>
-      <div style="color:#ff5252">
-        共：¥ {{data.price}}
-      </div>
-    </div>
-    <mu-divider/>
-    <div class="list-card-item">
-      <div class="list-card-control">
-        <button @click="cancelOrder(data.id)" class="btn-del" type="button" v-if="data.type==0 || data.type==1">取消订单</button>
-        <button @click="" class="btn-del" type="button" v-else>删除订单</button>
-      </div>
-      <div class="list-card-control">
-        <button type="button" :style="{border: '1px solid '+type[data.type].bgColor,color: type[data.type].bgColor}">
-          {{type[data.type].btn}}
-        </button>
+      <mu-divider/>
+      <div class="list-card-item">
+        <div class="list-card-control">
+          <button @click="cancelOrder(data.id)" class="btn-del" type="button" v-if="data.type==1">取消订单</button>
+          <button @click="cancelOrder(data.id)" class="btn-del" type="button" v-if="data.type>=2&&data.type<=5">删除订单</button>
+          <button @click="cancelOrder(data.id)" class="btn-del" type="button" v-if="data.type==7">立即评价</button>
+        </div>
+        <div class="list-card-control" v-if="type(data.type).bgColor">
+          <button type="button" :style="{border: '1px solid '+type(data.type).bgColor,color: type(data.type).bgColor}">
+            {{type(data.type).btn}}
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -65,18 +68,21 @@ export default {
   },
   data(){
     return {
-      type:[{
-        text:'待发货',
-        bgColor:'#ccc',
-        color:'',
-        btn:'提醒发货'
-      },{
+
+    }
+  },
+  methods:{
+    cancelOrder(id){
+      this.$emit('cancelOrder',id)
+    },
+    type(val){
+      let type = [{
         text:'待付款',
         bgColor:'#ff5252',
         color:'',
         btn:'立即付款'
       },{
-        text:'待确认',
+        text:'已支付',
         bgColor:'#ff9800',
         color:'',
         btn:'确认收货'
@@ -85,12 +91,15 @@ export default {
         bgColor:'#ff5722',
         color:'',
         btn:'立即评价'
-      }],
-    }
-  },
-  methods:{
-    cancelOrder(id){
-      this.$emit('cancelOrder',id)
+      }]
+      let index = 0
+      if (val>=2&&val<=5) {
+        index = 1
+      }
+      if (val==7) {
+        index=2
+      }
+      return type[index]
     }
   }
 }

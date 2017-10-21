@@ -1,8 +1,10 @@
 <template lang="html">
   <div>
     <my-header :headerBg="1" bgColor="#ff5252" textColor="#fff">
+      <mu-icon-button v-if="result.length==0" slot="left" style="z-index:2" @click.native="$router.go(-1)"  icon="keyboard_arrow_left"/>
+      <mu-icon-button v-if="result.length>0" slot="left" style="z-index:2" @click.native="result=[]"  icon="keyboard_arrow_left"/>
       <div slot="title" style="flex:1;position:relative">
-        <div v-if="searchStr" @click="searchStr=''" style="text-align:center;height:16px;width:16px;position:absolute;right:8px;z-index:2;top:8px;border-radius:50%;background:#ebebeb">
+        <div v-if="searchStr" @click="searchStr='';result=[]" style="text-align:center;height:16px;width:16px;position:absolute;right:8px;z-index:2;top:8px;border-radius:50%;background:#ebebeb">
           <mu-icon style="color:#ccc" :size="14" value="close"/>
         </div>
         <input v-model="searchStr" autofocus type="text" placeholder="搜索内容..." class="search-input"/>
@@ -46,16 +48,26 @@
 
               </img-div>
             </div>
-            <div @click="toDetail(item)" v-html="item.title.split('&')[0]">
+            <div style="display:flex;flex-direction: column;justify-content:space-between;flex:1">
+              <div v-text-overflow="2">
+                <div @click="toDetail(item)" v-html="item.title.split('&')[0]">
 
-            </div>
-            <div>
-              
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-between;color:#ff5252">
+                <div>
+                  ¥{{item.price}}
+                </div>
+                <div>
+                  <i style="font-size:14px;margin-right:1rem" class="material-icons">favorite</i>
+                  <i @click="clickShop(item)" style="font-size:14px" class="material-icons">add_shopping_cart</i>
+                </div>
+              </div>
             </div>
           </div>
           <mu-divider/>
           <div v-if="index == result.length-1" style="color:#ccc;text-align:center;font-size:12px;margin:.5rem 0">
-            到低了(⊙o⊙)哦一共{{result.length}}个结果
+            到底了(⊙o⊙)哦一共{{result.length}}个结果
           </div>
         </div>
       </div>
@@ -73,21 +85,21 @@ export default {
     return {
       searchStr:'',
       result:[],
-      noResult:''
-    }
-  },
-  computed:{
-    historySearch(){
-      let history = ['水果','蔬菜','零食','日用品']
-      if (localStorage.historySearch) {
-        history = JSON.parse(localStorage.historySearch)
-      }
-      return history
+      noResult:'',
+      historySearch:[]
     }
   },
   methods:{
+    getHistorySearch(){
+      let history = []
+      if (localStorage.historySearch) {
+        history = JSON.parse(localStorage.historySearch)
+      }
+      this.historySearch = history
+    },
     clearHistory(){
       localStorage.removeItem('historySearch')
+      this.historySearch = []
     },
     historySearchClick(str){
       this.searchStr = str
@@ -95,6 +107,11 @@ export default {
     },
     toDetail(item){
       this.$router.push('/detail/' + item.id)
+    },
+    clickShop(item){
+      let temp = item
+      temp.imgUrl = item.images
+      this.$store.commit('openShoppingCart',temp)
     },
     async search(){
       if (this.searchStr) {
@@ -115,14 +132,18 @@ export default {
           }else {
             history.push(this.searchStr)
           }
-          localStorage.history = JSON.stringify(history)
+          localStorage.historySearch = JSON.stringify(history)
           this.result = res.data.items
+          this.getHistorySearch()
         }else {
           this.result = []
           this.noResult = '没有搜索到结果,换个关键字?'
         }
       }
     }
+  },
+  mounted(){
+    this.getHistorySearch()
   }
 }
 </script>
@@ -143,5 +164,6 @@ export default {
 }
 .search-card{
   display: flex;
+
 }
 </style>

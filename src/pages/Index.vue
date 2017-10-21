@@ -15,7 +15,7 @@
       <div class="swiper-pagination"></div>
     </div>
     <div class="quick-nav">
-      <div v-for="item,index in quickNav">
+      <div v-for="item,index in quickNav" @click="quickNavClick(item)">
         <long-shadow-btn :preset="item.preset">
           <mu-icon :value="item.icon" />
         </long-shadow-btn>
@@ -63,19 +63,23 @@ export default {
       quickNav: [{
         span: '最常购买',
         icon: 'history',
-        preset:'blue'
+        preset: 'blue',
+        path: '/goodList/0'
       }, {
         span: '我的订单',
         icon: 'format_list_bulleted',
-        preset:'brown'
+        preset: 'brown',
+        path: '/orderlist/0'
       }, {
         span: '限量特价',
         icon: 'timer',
-        preset:'green'
+        preset: 'green',
+        path: '/goodList/1'
       }, {
         span: '我的收藏',
         icon: 'favorite',
-        preset:'red'
+        preset: 'red',
+        path: '/goodList/2'
       }],
       activity: []
     }
@@ -90,7 +94,6 @@ export default {
     },
     async getIndexActivity(id) {
       let res = await this.api.getIndexActivity()
-      console.log(res)
       this.activity = res.data.activity
     },
     toDetail(data) {
@@ -104,11 +107,34 @@ export default {
         this.imgList.push(temp)
       })
       this.activity = res.data
+    },
+    quickNavClick(item) {
+      if (item.path) {
+        this.$router.push(item.path)
+      }
+    },
+    getQueryString(name) {
+      var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+      var r = window.location.search.substr(1).match(reg);
+      if (r != null) {
+        return unescape(r[2]);
+      }
+      return null;
     }
   },
   async mounted() {
     // this.getIndexActivity()
     await this.getIndexData()
+    let code = this.getQueryString('code')
+    if (code !== null) {
+      // alert('成功获取到用户授权码' + code)
+      if (sessionStorage.openid) {
+
+      }else {
+        let res = await this.api.getOpenid(code)
+        sessionStorage.openid = res.data
+      }
+    }
     this.$nextTick(function() {
       // DOM 现在更新了
       // `this` 绑定到当前实例
@@ -128,7 +154,7 @@ export default {
 .quick-nav {
     display: flex;
     justify-content: space-around;
-    margin: .8rem 0;
+    margin: 0.8rem 0;
 }
 .activity {
     .header {
